@@ -1,34 +1,37 @@
 {
-  "name": "trial-and-error_0615",
+  "name": "mellow-distributer",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "+++ scripts配下はシェルスクリプトを記載する。また、node_modules配下を直接呼べる +++": "",
+  "+++ scripts配下はシェルスクリプトを記載する。なお、node_modules配下を直接呼べる +++": "",
   "scripts": {
+    "▽▽▽ vscodeでデバッグする場合'npm run build'してからデバッグ ▽▽▽": "",
+    "build": "npm run clean & tsc",
     "▽▽▽ node ./src/index.js.. のように実行できるようにする ▽▽▽": "",
-    "dev": "ts-node ./src/index.ts",
-    "▽▽▽ ソースの変更を検知して実行する ▽▽▽": "",
-    "dev:watch": "ts-node-dev --respawn src/index.ts",
+    "dev": "npm run clean & ts-node ./src/index.ts",
+    "▽▽▽ ソースの変更を検知したら随時実行する。メンテナンス要 ▽▽▽": "",
+    "---dev:watch---": "npm run clean & ts-node-dev --respawn src/index.ts",
+    "dev:watch": "tsc src/index.ts -w",
     "▽▽▽ rm -rf.. と同様 ▽▽▽": "",
     "clean": "rimraf dist/*",
-    "build": "npm run clean & tsc",
-    "start": "node .",
+    "start": "node dist/index.js",
     "lint": "eslint 'src/**/*.js' --fix",
     "format": "prettier-eslint 'src/*.{js,json}' --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo test-is-undefined"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/D-A-I/trial-and-error_0615.git"
+    "url": "git+https://github.com/D-A-I/mellow-distributer.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/D-A-I/trial-and-error_0615/issues"
+    "url": "https://github.com/D-A-I/mellow-distributer"
   },
-  "homepage": "https://github.com/D-A-I/trial-and-error_0615#readme",
+  "homepage": "https://github.com/D-A-I/mellow-distributer#readme",
   "dependencies": {
+    "@slack/web-api": "^5.0.1",
     "typescript": "^3.5.2"
   },
   "devDependencies": {
