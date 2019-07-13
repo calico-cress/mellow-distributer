@@ -1,6 +1,6 @@
 import fs from 'fs';
-import diff from './diff';
-import distributer from './distributer';
+import execDiff from './diff';
+import distribute from './distributer';
 
 /* 例外処理.. 追々実装 */
 //#region
@@ -32,7 +32,7 @@ if (!process.env.SLACK_TOKEN) process.env.SLACK_TOKEN = conf.token;
 
 /* diff.ts を呼ぶ */
 (async (): Promise<void> => {
-    const result = await diff.main(conf.inputHistoryDir, conf.inputLatestDir);
-    console.log(result[0]);
-    distributer.main();
+    const result = await execDiff(conf.inputHistoryDir, conf.inputLatestDir);
+    // console.log(result[0]);
+    distribute(result);
 })();

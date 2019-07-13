@@ -8,13 +8,11 @@ const readDir = promisify(fs.readdir);
 const exec = promisify(_exec);
 
 /* 型情報 */
-///*
-interface ArticleImpl {
+export interface ArticleImpl {
     name: string;
     date: string;
     url: string;
 }
-//*/
 
 /* ファイル名称の一覧を取得する */
 const getNames = async (pth: string): Promise<string[]> => {
@@ -62,7 +60,7 @@ const getPairOfSite = async (
     return pairs;
 };
 
-/* ペアについてdiffを実行し、差分を返す.. +++ あとでリファクタリングする +++ */
+/* ペアについてdiffを実行し、差分を返す.. +++ あとでリファクタリング +++ */
 const execDiff = async (
     histPath: string,
     ltstPath: string
@@ -118,7 +116,7 @@ const execDiff = async (
  * @param {string} ltstPath
  * @returns {[string, string]} 送信先のチャンネル名 ／ URL
  */
-async function main(
+export default async function main(
     histPath: string,
     ltstPath: string
 ): Promise<ArticleImpl[]> {
@@ -138,8 +136,7 @@ async function main(
     const comparisons = await getPairOfSite(prevFiles, ltstFiles);
 
     // 非同期（xN）=> 同期
-    let _tmp: ArticleImpl[][];
-    _tmp = await Promise.all(
+    let articles: ArticleImpl[][] = await Promise.all(
         comparisons.map(
             (x: [string, string]): Promise<ArticleImpl[]> => {
                 return execDiff(
@@ -150,14 +147,17 @@ async function main(
         )
     );
 
-    // 平準化して返す（二次元から一次元へ）
-    return _tmp.reduce(
+    // 平準化して返す（二次元 -> 一次元へ）
+    return articles.flat();
+    //#region Node.jsの、Ver.11以下の場合
+    /*
+    return articles.reduce(
         (prev: ArticleImpl[], curr: ArticleImpl[]): ArticleImpl[] => {
             prev.push(...curr);
             return prev;
         },
         []
     );
+    */
+    //#endregion
 }
-
-export = { main };
