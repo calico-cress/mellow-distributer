@@ -10,7 +10,7 @@ export default function main(articles: ArticleImpl[]): void {
     const token = process.env.SLACK_TOKEN; // トークン
     const client = new WebClient(token);
     const conversationId = '#prod_mellow_news'; // 投稿先
-    // 投稿の非同期メソッド
+    // 投稿用の非同期メソッド
     const messages = articles.map(
         (x: ArticleImpl): Promise<WebAPICallResult> => {
             return client.chat.postMessage({
@@ -19,7 +19,6 @@ export default function main(articles: ArticleImpl[]): void {
             });
         }
     );
-
     // メッセージ送信
     (async (): Promise<void> => {
         const result = await Promise.all(messages);

@@ -30,7 +30,6 @@ const conf = JSON.parse(fs.readFileSync('./init.json', 'utf8'));
 // 環境変数SLACK_TOKENに値が設定されていなかったら、init.jsonからtokenをセット
 if (!process.env.SLACK_TOKEN) process.env.SLACK_TOKEN = conf.token;
 
-/* diff.ts を呼ぶ */
 (async (): Promise<void> => {
     const result = await execDiff(conf.inputHistoryDir, conf.inputLatestDir);
     // console.log(result[0]);

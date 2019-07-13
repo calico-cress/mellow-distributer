@@ -1,6 +1,5 @@
-# Node.js + TypeScript + Eslint
+# Slackの投稿アプリ
 
-## Jestについて
+## クローラー機能は別アプリ
 
-以下参照..
-<https://typescript-jp.gitbook.io/deep-dive/intro-1/jest>
+## 近日中にテストを追加する
