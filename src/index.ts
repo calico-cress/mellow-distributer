@@ -1,9 +1,8 @@
 import fs from 'fs';
 import execDiff from './diff';
-import distribute from './distributer';
+import distribute from './distribute';
 
-/* 例外処理.. 追々実装 */
-//#region
+//#region 例外処理.. 追々実装
 // Promiseのエラーがcatchされなかった場合
 /*
 process.on('unhandledRejection', (reason: unknown): void => {
@@ -32,6 +31,5 @@ if (!process.env.SLACK_TOKEN) process.env.SLACK_TOKEN = conf.token;
 
 (async (): Promise<void> => {
     const result = await execDiff(conf.inputHistoryDir, conf.inputLatestDir);
-    // console.log(result[0]);
-    distribute(result);
+    if (result.length > 0) distribute(result);
 })();

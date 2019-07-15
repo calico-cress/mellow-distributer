@@ -60,27 +60,32 @@ const getPairOfSite = async (
     return pairs;
 };
 
-/* ペアについてdiffを実行し、差分を返す.. +++ あとでリファクタリング +++ */
+/* ペアについてdiffを実行する */
 const execDiff = async (
     histPath: string,
     ltstPath: string
-): Promise<ArticleImpl[]> => {
-    const result: ArticleImpl[] = [];
-    // 処理用の変数群
-    let _stdout = '';
-    let _name = '';
-    let _temp: ArticleImpl = { name: '', date: '', url: '' };
-
+): Promise<string> => {
+    let result = '';
     try {
         await exec(`diff ${histPath} ${ltstPath}`);
     } catch (_out) {
         /* promise化したexecで、diffコマンドを実行した場合、差異があるとエラー扱いになる
          * エラーオブジェクトが持っている標準出力を渡す */
-        _stdout = _out.stdout;
+        result = _out.stdout;
     }
+    return result;
+};
 
-    // 差異があるかチェック
-    if (!_stdout.includes('date') || !_stdout.includes('url')) return result;
+/* diffの実行結果から、差分があるかチェック */
+const checkDiff = (stdout: string): boolean =>
+    stdout.includes('date') && stdout.includes('url');
+
+/* diffの実行結果から、投稿用の記事情報を取得 */
+const getArticles = (stdout: string, ltstPath: string): ArticleImpl[] => {
+    const result: ArticleImpl[] = [];
+    // 処理用の変数群
+    let _name = '';
+    let _temp: ArticleImpl = { name: '', date: '', url: '' };
 
     // ++ name ++
     // ファイル名からサイト名を抽出
@@ -88,7 +93,7 @@ const execDiff = async (
     matched = /\d{14}_(.+)\.json/.exec(path.basename(ltstPath));
     _name = matched ? matched[1] : '';
 
-    const parts = _stdout.split(/\n/).map((x: string): string => x.trim());
+    const parts = stdout.split(/\n/).map((x: string): string => x.trim());
     for (var x of parts) {
         // ++ date ++
         matched = /"date"\:\s{1}"(\d+[\.|\/]\d+[\.|\/]\d+)"/.exec(x);
@@ -108,6 +113,16 @@ const execDiff = async (
         }
     }
     return result;
+};
+
+/* diffの実行から結果の整形までまとめ */
+const combineDiff = async (
+    histPath: string,
+    ltstPath: string
+): Promise<ArticleImpl[]> => {
+    const stdout = await execDiff(histPath, ltstPath);
+    if (!checkDiff(stdout)) return [];
+    return getArticles(stdout, ltstPath);
 };
 
 /**
@@ -135,17 +150,16 @@ export default async function main(
     // ペアとなるファイル名を取得する
     const comparisons = await getPairOfSite(prevFiles, ltstFiles);
 
+    // Array#map用のメソッド
+    const mapper = (x: [string, string]): Promise<ArticleImpl[]> => {
+        return combineDiff(
+            path.join(histPath, x[0]),
+            path.join(ltstPath, x[1])
+        );
+    };
+
     // 非同期（xN）=> 同期
-    let articles: ArticleImpl[][] = await Promise.all(
-        comparisons.map(
-            (x: [string, string]): Promise<ArticleImpl[]> => {
-                return execDiff(
-                    path.join(histPath, x[0]),
-                    path.join(ltstPath, x[1])
-                );
-            }
-        )
-    );
+    let articles: ArticleImpl[][] = await Promise.all(comparisons.map(mapper));
 
     // 平準化して返す（二次元 -> 一次元へ）
     return articles.flat();
