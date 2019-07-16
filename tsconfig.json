@@ -8,6 +8,9 @@
     "types": [
       "node"
     ],
+    "typeRoots": [
+      ".src/@types"
+    ],
     "esModuleInterop": true
   },
   "include": [

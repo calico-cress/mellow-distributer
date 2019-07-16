@@ -15,7 +15,7 @@ export default function main(articles: ArticleImpl[]): void {
         (x: ArticleImpl): Promise<WebAPICallResult> => {
             return client.chat.postMessage({
                 channel: conversationId,
-                text: `${x.name}：${x.date.replace(/\./g, '/')}\n${x.url}`,
+                text: `${x.name}：${x.date.replace(/\.|-/g, '/')}\n${x.url}`,
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 unfurl_links: true,
             });

@@ -89,8 +89,10 @@ const getArticles = (stdout: string, ltstPath: string): ArticleImpl[] => {
 
     const parts = stdout.split(/\n/).map((x: string): string => x.trim());
     for (var x of parts) {
+        // 先頭が">"から開始する
+        if (!/^>.+/.test(x)) continue;
         // ++ date ++
-        matched = /"date"\:\s{1}"(\d+[\.|\/]\d+[\.|\/]\d+)"/.exec(x);
+        matched = /"date"\:\s{1}"(\d+[\.|\/|-]\d+[\.|\/|-]\d+)"/.exec(x);
         if (matched !== null) {
             // dateが見つかったら初期化
             _temp = { name: _name, date: '', url: '' };
