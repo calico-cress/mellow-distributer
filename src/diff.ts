@@ -23,7 +23,7 @@ const getNames = async (pth: string): Promise<string[]> => {
 
 /* 引数で受け取ったフォルダパス配下から、ファイル名を取得する
  * ファイル名から直近のyyyymmddを取得する */
-const getLastDate = async (names: string[]): Promise<number> => {
+const getLastDate = (names: string[]): number => {
     // ファイル名からyyyymmdd部分のみ取得
     const ymd = names.map((x: string): number => parseInt(x.substr(0, 8)));
     // 最新の日付を取得する
@@ -34,10 +34,7 @@ const getLastDate = async (names: string[]): Promise<number> => {
 
 /* 引数で受け取ったyyyymmddとファイルパスによって、
  * 同一'yyyymmdd'のファイル名の配列を取得する */
-const getLatestFiles = async (
-    names: string[],
-    ymd: number
-): Promise<string[]> => {
+const getLatestFiles = (names: string[], ymd: number): string[] => {
     // ファイル一覧を取得する
     return names.filter(
         (x: string): boolean => ymd.toString() === x.substr(0, 8)
@@ -45,10 +42,7 @@ const getLatestFiles = async (
 };
 
 /* 2つのファイル名称の配列から、サイト名が合致するペアを返す */
-const getPairOfSite = async (
-    hist: string[],
-    ltst: string[]
-): Promise<[string, string][]> => {
+const getPairOfSite = (hist: string[], ltst: string[]): [string, string][] => {
     let pairs: [string, string][] = [];
     let matched: string[] = [];
     hist.forEach((x: string): void => {
@@ -140,15 +134,15 @@ export default async function main(
     const ltstNames = await getNames(ltstPath);
 
     // 最後の実行日付を取得する
-    const lastRunDate = await getLastDate(histNames);
-    const executeDate = await getLastDate(ltstNames);
+    const lastRunDate = getLastDate(histNames);
+    const executeDate = getLastDate(ltstNames);
 
     // 同一の実行日付のファイルの一覧を取得する
-    const prevFiles = await getLatestFiles(histNames, lastRunDate);
-    const ltstFiles = await getLatestFiles(ltstNames, executeDate);
+    const prevFiles = getLatestFiles(histNames, lastRunDate);
+    const ltstFiles = getLatestFiles(ltstNames, executeDate);
 
     // ペアとなるファイル名を取得する
-    const comparisons = await getPairOfSite(prevFiles, ltstFiles);
+    const comparisons = getPairOfSite(prevFiles, ltstFiles);
 
     // Array#map用のメソッド
     const mapper = (x: [string, string]): Promise<ArticleImpl[]> => {
