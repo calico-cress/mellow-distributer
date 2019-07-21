@@ -32,7 +32,7 @@ const getLastDate = (names: string[]): number => {
     });
 };
 
-/* 引数で受け取ったyyyymmddとファイルパスによって、
+/* 引数で受け取ったファイルパスとyyyymmddによって、
  * 同一'yyyymmdd'のファイル名の配列を取得する */
 const getLatestFiles = (names: string[], ymd: number): string[] => {
     // ファイル一覧を取得する
@@ -135,13 +135,9 @@ export default async function main(
     const histNames = await getNames(histPath);
     const ltstNames = await getNames(ltstPath);
 
-    // 最後の実行日付を取得する
-    const lastRunDate = getLastDate(histNames);
-    const executeDate = getLastDate(ltstNames);
-
     // 同一の実行日付のファイルの一覧を取得する
-    const prevFiles = getLatestFiles(histNames, lastRunDate);
-    const ltstFiles = getLatestFiles(ltstNames, executeDate);
+    const prevFiles = getLatestFiles(histNames, getLastDate(histNames));
+    const ltstFiles = getLatestFiles(ltstNames, getLastDate(ltstNames));
 
     // ペアとなるファイル名を取得する
     const comparisons = getPairOfSite(prevFiles, ltstFiles);

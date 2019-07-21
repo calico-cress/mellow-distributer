@@ -1,17 +1,18 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* I/Oや日付関連 */
-import { mkdir as _mkdir, appendFile as _appendFile } from 'fs'; // ファイルIO
-import moment from 'moment'; // 日付操作
-import { promisify } from 'util';
+const fs = require('fs'); // ファイルIO
+const moment = require('moment'); // 日付操作
+const { promisify } = require('util');
 
 // promise化
-const mkdir = promisify(_mkdir);
-const appendFile = promisify(_appendFile);
+const mkdir = promisify(fs.mkdir);
+const appendFile = promisify(fs.appendFile);
 
 /**
  * ログ出力
  * @param {string} message
  */
-export default message => {
+module.exports = message => {
     let appendLog = () =>
         appendFile(
             './logs/app.log',
