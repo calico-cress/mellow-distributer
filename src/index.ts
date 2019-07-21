@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import fs from 'fs';
 import execDiff from './diff';
 import distribute from './distribute';
 
 // 自作の簡易ログ（js）
 type Logger = (message: string) => void;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const logger: Logger = require('../helper/logger');
 
 //#region 例外処理。追々実装予定
@@ -41,7 +41,9 @@ if (!process.env.SLACK_TOKEN) process.env.SLACK_TOKEN = conf.token;
     const result = await execDiff(conf.inputHistoryDir, conf.inputLatestDir);
     // 差分がある場合のみ投稿する
     if (result.length > 0) {
-        logger('>> 新着記事を検知しました。Slackへ投稿します');
+        logger(
+            `>> 新着記事を ${result.length} 件検知しました。Slackへ投稿します`
+        );
         distribute(result);
     } else {
         logger('>> 新着記事はありません');
