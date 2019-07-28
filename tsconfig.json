@@ -6,12 +6,15 @@
     "outDir": "./dist",
     "strict": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
+    "allowJs": true, // javascriptもコンパイル対象にし、distに移動する
+    "checkJs": true,
     "esModuleInterop": true
   },
   "include": [
     "src/**/*",
-    "helper"
+    //"__tests__", // コメントを外すとテストコード内でjestが参照できなくなる
   ]
 }

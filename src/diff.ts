@@ -15,15 +15,14 @@ export interface ArticleImpl {
 }
 
 /* ファイル名称の一覧を取得する */
-const getNames = async (pth: string): Promise<string[]> => {
+export const getNames = async (pth: string): Promise<string[]> => {
     // ファイルの一覧を取得する
     const files = await readDir(pth);
     return files.map((x: string): string => path.basename(x));
 };
 
-/* 引数で受け取ったフォルダパス配下から、ファイル名を取得する
- * ファイル名から直近のyyyymmddを取得する */
-const getLastDate = (names: string[]): number => {
+/* 引数で受け取ったファイルの一覧から直近のyyyymmddを取得する */
+export const getLastDate = (names: string[]): number => {
     // ファイル名からyyyymmdd部分のみ取得
     const ymd = names.map((x: string): number => parseInt(x.substr(0, 8)));
     // 最新の日付を取得する
@@ -32,9 +31,9 @@ const getLastDate = (names: string[]): number => {
     });
 };
 
-/* 引数で受け取ったファイルパスとyyyymmddによって、
+/* 引数で受け取ったファイル一覧とyyyymmddによって、
  * 同一'yyyymmdd'のファイル名の配列を取得する */
-const getLatestFiles = (names: string[], ymd: number): string[] => {
+export const getLatestFiles = (names: string[], ymd: number): string[] => {
     // ファイル一覧を取得する
     return names.filter(
         (x: string): boolean => ymd.toString() === x.substr(0, 8)
@@ -42,20 +41,24 @@ const getLatestFiles = (names: string[], ymd: number): string[] => {
 };
 
 /* 2つのファイル名称の配列から、サイト名が合致するペアを返す */
-const getPairOfSite = (hist: string[], ltst: string[]): [string, string][] => {
+export const getPairOfSite = (
+    hist: string[],
+    ltst: string[]
+): [string, string][] => {
     let pairs: [string, string][] = [];
     let matched: string[] = [];
-    hist.forEach((x: string): void => {
-        matched = ltst.filter(
+    // 最新ファイルの一覧から、過去分ファイルを探す
+    ltst.forEach((x: string): void => {
+        matched = hist.filter(
             (y: string): boolean => x.substr(15) === y.substr(15)
         );
-        pairs.push([x, matched[0]]);
+        pairs.push([matched[0] || 'dummy.txt', x]);
     });
     return pairs;
 };
 
 /* ペアについてdiffを実行する */
-const execDiff = async (
+export const execDiff = async (
     histPath: string,
     ltstPath: string
 ): Promise<string> => {
@@ -71,11 +74,14 @@ const execDiff = async (
 };
 
 /* diffの実行結果から、差分があるかチェック */
-const checkDiff = (stdout: string): boolean =>
+export const checkDiff = (stdout: string): boolean =>
     stdout.includes('date') && stdout.includes('url');
 
 /* diffの実行結果から、投稿用の記事情報を取得 */
-const getArticles = (stdout: string, ltstPath: string): ArticleImpl[] => {
+export const getArticles = (
+    stdout: string,
+    ltstPath: string
+): ArticleImpl[] => {
     const result: ArticleImpl[] = [];
     // 処理用の変数群
     let _name = '';
@@ -112,7 +118,7 @@ const getArticles = (stdout: string, ltstPath: string): ArticleImpl[] => {
 };
 
 /* diffの実行から結果の整形までまとめ */
-const combineDiff = async (
+export const combineDiff = async (
     histPath: string,
     ltstPath: string
 ): Promise<ArticleImpl[]> => {
@@ -157,13 +163,13 @@ export default async function main(
     return articles.flat();
     //#region Node.jsの、Ver.11以下の場合
     /*
-    return articles.reduce(
-        (prev: ArticleImpl[], curr: ArticleImpl[]): ArticleImpl[] => {
-            prev.push(...curr);
-            return prev;
-        },
-        []
-    );
-    */
+      return articles.reduce(
+          (prev: ArticleImpl[], curr: ArticleImpl[]): ArticleImpl[] => {
+              prev.push(...curr);
+              return prev;
+          },
+          []
+      );
+      */
     //#endregion
 }
