@@ -21,6 +21,7 @@ describe('diff', (): void => {
         test('ファイル名に含まれる最新の日付を取得する', (): void => {
             expect(diff.getLastDate(testList)).toBe(99991231);
         });
+        /* TODO：ファイル名に日付がない場合のテスト追加 */
     });
     // getLatestFiles
     describe('getLatestFiles() >>', (): void => {
@@ -30,6 +31,7 @@ describe('diff', (): void => {
                 '99991231000000_index03.txt',
             ]);
         });
+        /* TODO：ファイル名に日付がないデータが混在した場合のテスト追加 */
     });
     // getPairOfSite
     describe('getPairOfSite() >>', (): void => {

@@ -16,6 +16,7 @@
        ..着手中
      - distribute.ts
    - バグの修正
+     - dummy.txt（空ファイル）が無かったら作成する
 2. 関数型（FRP）のライブラリの導入を検討  
    - Ramda.js
    - RxJS

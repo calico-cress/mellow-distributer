@@ -6,6 +6,7 @@ import { promisify } from 'util';
 // promise化
 const readDir = promisify(fs.readdir);
 const exec = promisify(_exec);
+const writeFile = promisify(fs.writeFile);
 
 /* 型情報 */
 export interface ArticleImpl {
@@ -13,6 +14,13 @@ export interface ArticleImpl {
     date: string;
     url: string;
 }
+
+/* 引数で受け取った名称の空ファイルを作成する */
+export const touch = async (path: string): Promise<void> => {
+    try {
+        await writeFile(path, '');
+    } catch {}
+};
 
 /* ファイル名称の一覧を取得する */
 export const getNames = async (pth: string): Promise<string[]> => {
@@ -24,11 +32,14 @@ export const getNames = async (pth: string): Promise<string[]> => {
 /* 引数で受け取ったファイルの一覧から直近のyyyymmddを取得する */
 export const getLastDate = (names: string[]): number => {
     // ファイル名からyyyymmdd部分のみ取得
-    const ymd = names.map((x: string): number => parseInt(x.substr(0, 8)));
-    // 最新の日付を取得する
-    return ymd.reduce((prev: number, ltst: number): number => {
-        return prev >= ltst ? prev : ltst;
-    });
+    return names
+        .filter((x: string): boolean => isFinite(parseInt(x.substring(0, 8))))
+        .map((x: string): number => {
+            return parseInt(x.substring(0, 8));
+        })
+        .reduce((prev: number, ltst: number): number => {
+            return prev >= ltst ? prev : ltst;
+        });
 };
 
 /* 引数で受け取ったファイル一覧とyyyymmddによって、
@@ -36,11 +47,12 @@ export const getLastDate = (names: string[]): number => {
 export const getLatestFiles = (names: string[], ymd: number): string[] => {
     // ファイル一覧を取得する
     return names.filter(
-        (x: string): boolean => ymd.toString() === x.substr(0, 8)
+        (x: string): boolean => ymd.toString() === x.substring(0, 8)
     );
 };
 
-/* 2つのファイル名称の配列から、サイト名が合致するペアを返す */
+/* 2つのファイル名称の配列から、サイト名が合致するペアを返す
+ * 組合せが見つからない場合、dummy.txtをペアにする */
 export const getPairOfSite = (
     hist: string[],
     ltst: string[]
@@ -50,7 +62,7 @@ export const getPairOfSite = (
     // 最新ファイルの一覧から、過去分ファイルを探す
     ltst.forEach((x: string): void => {
         matched = hist.filter(
-            (y: string): boolean => x.substr(15) === y.substr(15)
+            (y: string): boolean => x.substring(15) === y.substring(15)
         );
         pairs.push([matched[0] || 'dummy.txt', x]);
     });
@@ -137,6 +149,9 @@ export default async function main(
     histPath: string,
     ltstPath: string
 ): Promise<ArticleImpl[]> {
+    // dummy.txtを作成する
+    await touch(path.join(histPath, 'dummy.txt'));
+
     // ファイル名を取得する
     const histNames = await getNames(histPath);
     const ltstNames = await getNames(ltstPath);
