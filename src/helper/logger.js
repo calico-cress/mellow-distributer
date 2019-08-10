@@ -13,22 +13,22 @@ const appendFile = promisify(fs.appendFile);
  * @param {string} message
  */
 module.exports = message => {
-    let appendLog = () =>
-        appendFile(
-            './logs/app.log',
-            moment().format('YYYY/MM/DD HH:mm:ss') + ' ' + message + '\n'
-        );
-    // （node.jsの流儀に従い）フォルダの存在チェックはしない
-    mkdir('./logs/')
-        .then(
-            // 初回のみ、mkdirはfulfilledになる
-            () => appendLog(),
-            err => {
-                // 既にフォルダが存在する場合（2回目以降）
-                if (err && err.code === 'EEXIST') appendLog();
-            }
-        )
-        .catch(err => {
-            if (err) console.log(err);
-        });
+  let appendLog = () =>
+    appendFile(
+      './logs/app.log',
+      moment().format('YYYY/MM/DD HH:mm:ss') + ' ' + message + '\n'
+    );
+  // （node.jsの流儀に従い）フォルダの存在チェックはしない
+  mkdir('./logs/')
+    .then(
+      // 初回のみ、mkdirはfulfilledになる
+      () => appendLog(),
+      err => {
+        // 既にフォルダが存在する場合（2回目以降）
+        if (err && err.code === 'EEXIST') appendLog();
+      }
+    )
+    .catch(err => {
+      if (err) console.log(err);
+    });
 };
