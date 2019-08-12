@@ -17,6 +17,7 @@ describe('diff', (): void => {
       expect(result).toEqual(testList);
     });
   });
+
   // getLastDate
   describe('getLastDate()', (): void => {
     test('ファイル名に含まれる最新の日付を取得する', (): void => {
@@ -28,6 +29,7 @@ describe('diff', (): void => {
       );
     });
   });
+
   // getLatestFiles
   describe('getLatestFiles()', (): void => {
     test('日付に合致したファイルを抽出する', (): void => {
@@ -42,6 +44,7 @@ describe('diff', (): void => {
       ).toEqual(['99991231000000_index02.txt', '99991231000000_index03.txt']);
     });
   });
+
   // getPairOfSite
   describe('getPairOfSite()', (): void => {
     test('配列同士から、サイト名が合致する組合せを取得する', (): void => {
@@ -55,22 +58,33 @@ describe('diff', (): void => {
       ).toEqual([['dummy.txt', '19990101235959_index04.txt']]);
     });
   });
+
   // execDiff
   describe('execDiff()', (): void => {
-    test('差分が無い場合は、空白文字を返す', async (): Promise<void> => {
+    test('差分が無い場合、空白文字を返す', async (): Promise<void> => {
       const result = await diff.execDiff(
         path.join(matePath, '99990101000000_index01.txt'),
         path.join(matePath, '99990101000000_index01.txt')
       );
       expect(result).toEqual('');
     });
-    test('差分がある場合は、文字列を返す', async (): Promise<void> => {
+    test('差分がある場合、文字列を返す', async (): Promise<void> => {
       const result = await diff.execDiff(
         path.join(matePath, '99990101000000_index01.txt'),
         path.join(matePath, '99991231000000_index03.txt')
       );
-      expect(typeof result === 'string').not.toEqual('');
+      expect(typeof result === 'string').toBeTruthy();
       expect(result.length > 0).toBeTruthy();
+    });
+  });
+
+  // checkDiff
+  describe('checkDiff()', (): void => {
+    test('dateおよびurlという文字列を渡した場合、真を返す', (): void => {
+      expect(diff.checkDiff('date, url')).toBeTruthy();
+    });
+    test('dateおよびurlという文字列を渡さなかった場合、偽を返す', (): void => {
+      expect(diff.checkDiff('data, url')).toBeFalsy();
     });
   });
 });

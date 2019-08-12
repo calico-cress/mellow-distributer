@@ -5,18 +5,11 @@
 ## 今後の予定
 
 1. jestのテスト実装
-   - テスト設定の作成  
-     **OK**
-   - 関連ドキュメントをチェック  
-     OK  
-     - <https://qiita.com/chimame/items/e97883fd46b67529d59f>
-     - 公式
    - テストコード作成
      - diff.ts（x9 ..メソッド分）  
-       ..着手中
-     - distribute.ts
-   - バグの修正
-     - dummy.txt（空ファイル）が無かったら作成する
+       6/9 実装済
+     - distribute.ts  
+       ..（機能が小さいため）不要
 2. 関数型（FRP）のライブラリの導入を検討  
    - Ramda.js
    - RxJS
