@@ -9,7 +9,7 @@ const exec = promisify(_exec);
 const writeFile = promisify(fs.writeFile);
 
 /* 型情報 */
-export interface ArticleImpl {
+export interface Article {
   name: string;
   date: string;
   url: string;
@@ -90,14 +90,11 @@ export const checkDiff = (stdout: string): boolean =>
   stdout.includes('date') && stdout.includes('url');
 
 /* diffの実行結果から、投稿用の記事情報を取得 */
-export const getArticles = (
-  stdout: string,
-  ltstPath: string
-): ArticleImpl[] => {
-  const result: ArticleImpl[] = [];
+export const getArticles = (stdout: string, ltstPath: string): Article[] => {
+  const result: Article[] = [];
   // 処理用の変数群
   let _name = '';
-  let _temp: ArticleImpl = { name: '', date: '', url: '' };
+  let _temp: Article = { name: '', date: '', url: '' };
 
   // ++ name ++
   // ファイル名からサイト名を抽出
@@ -133,7 +130,7 @@ export const getArticles = (
 export const combineDiff = async (
   histPath: string,
   ltstPath: string
-): Promise<ArticleImpl[]> => {
+): Promise<Article[]> => {
   const stdout = await execDiff(histPath, ltstPath);
   if (!checkDiff(stdout)) return [];
   return getArticles(stdout, ltstPath);
@@ -148,7 +145,7 @@ export const combineDiff = async (
 export default async function main(
   histPath: string,
   ltstPath: string
-): Promise<ArticleImpl[]> {
+): Promise<Article[]> {
   // dummy.txtを作成する
   await touch(path.join(histPath, 'dummy.txt'));
 
@@ -164,24 +161,24 @@ export default async function main(
   const comparisons = getPairOfSite(prevFiles, ltstFiles);
 
   // Array#map用のメソッド
-  const mapper = (x: [string, string]): Promise<ArticleImpl[]> => {
+  const mapper = (x: [string, string]): Promise<Article[]> => {
     return combineDiff(path.join(histPath, x[0]), path.join(ltstPath, x[1]));
   };
 
   // 非同期（xN）=> 同期
-  let articles: ArticleImpl[][] = await Promise.all(comparisons.map(mapper));
+  let articles: Article[][] = await Promise.all(comparisons.map(mapper));
 
   // 平準化して返す（二次元 -> 一次元へ）
   return articles.flat();
   //#region Node.jsの、Ver.11以下の場合
   /*
-    return articles.reduce(
-        (prev: ArticleImpl[], curr: ArticleImpl[]): ArticleImpl[] => {
-            prev.push(...curr);
-            return prev;
-        },
-        []
-    );
-    */
+  return articles.reduce(
+      (prev: ArticleImpl[], curr: ArticleImpl[]): ArticleImpl[] => {
+          prev.push(...curr);
+          return prev;
+      },
+      []
+  );
+  */
   //#endregion
 }

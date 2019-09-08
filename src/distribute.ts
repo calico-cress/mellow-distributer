@@ -1,18 +1,18 @@
 import { WebClient, WebAPICallResult } from '@slack/web-api';
-import { ArticleImpl } from './diff';
+import { Article } from './diff';
 
 /**
  * slack投稿のメイン処理
  * @export
- * @param {ArticleImpl[]} articles 投稿する記事情報
+ * @param {Article[]} articles 投稿する記事情報
  */
-export default function main(articles: ArticleImpl[]): void {
+export default function main(articles: Article[]): void {
   const token = process.env.SLACK_TOKEN; // トークン
   const client = new WebClient(token);
   const conversationId = '#prod_mellow_news'; // 投稿先
   // 投稿用の非同期メソッド（xN）
   const messages = articles.map(
-    (x: ArticleImpl): Promise<WebAPICallResult> => {
+    (x: Article): Promise<WebAPICallResult> => {
       return client.chat.postMessage({
         channel: conversationId,
         text: `${x.name}：${x.date.replace(/\.|-/g, '/')}\n${x.url}`,
